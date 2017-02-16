@@ -1,0 +1,18 @@
+{
+    "go.buildOnSave": true,
+    "go.lintOnSave": true,
+    "go.vetOnSave": true,
+    "go.buildTags": "",
+    "go.buildFlags": [],
+    "go.lintTool": "gometalinter",
+    "go.lintFlags": [],
+    "go.vetFlags": [],
+    "go.coverOnSave": false,
+    "go.useCodeSnippetsOnFunctionSuggest": false,
+    "go.formatOnSave": true, 
+    "go.formatTool": "goreturns",
+    "go.formatFlags": [],
+    "go.gocodeAutoBuild": false,
+    "go.goroot": "/usr/local/Cellar/go/1.7.5/libexec",
+    "go.gopath": "/Users/julianmccarthy/golang"
+}
