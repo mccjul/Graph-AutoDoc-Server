@@ -3,5 +3,5 @@ go:
   - 1.7.x
 
 script: 
-  - go build
-  - go test ./...
+  - go build -v -tags "pam"
+  - go test -v -cover -race ./...
