@@ -13,6 +13,6 @@
     "go.formatTool": "goreturns",
     "go.formatFlags": [],
     "go.gocodeAutoBuild": false,
-    "go.goroot": "/usr/local/Cellar/go/1.7.5/libexec",
-    "go.gopath": "/Users/julianmccarthy/golang"
+    "go.goroot": "",
+    "go.gopath": "/Users/juju/go"
 }

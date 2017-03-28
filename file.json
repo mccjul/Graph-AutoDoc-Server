@@ -1,0 +1,10 @@
+[
+    {
+        "typecode":"type Stuff {ID: String}",
+        "comment":"This type contains ids for stuff"
+    },
+    {
+        "typecode":"type Bob {Name: String}",
+        "comment":"This type is contains a name for Bob"
+    }
+]
