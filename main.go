@@ -11,10 +11,13 @@ import (
 func main() {
 	e := echo.New()
 	e.Logger.SetLevel(log.ERROR)
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	}))
+	e.Use(middleware.CORS())
 
 	// Database connection
-	db, err := mgo.Dial("localhost:32768")
+	db, err := mgo.Dial("mongo:27017")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
@@ -24,12 +27,12 @@ func main() {
 
 	// APP Routes
 	e.POST("/app", h.CreateApp)
-	e.GET("/app:id", h.GetApps)
-	e.PATCH("/app:id", h.PatchApp)
-	e.DELETE("/app:id", h.RemoveApp)
+	e.GET("/app/:id", h.GetApps)
+	e.PATCH("/app/:id", h.PatchApp)
+	e.DELETE("/app/:id", h.RemoveApp)
 
 	// DOC Routes
-	e.GET("/doc:id", h.GetDoc)
+	e.GET("/doc/:id", h.GetDoc)
 	e.PATCH("/doc", h.PatchDoc)
 
 	// Start server

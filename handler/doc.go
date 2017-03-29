@@ -15,16 +15,17 @@ import (
 
 //GetDoc from id
 func (h *Handler) GetDoc(c echo.Context) (err error) {
-	doc := &model.Doc{}
+	docs := []*model.Doc{}
 
 	db := h.DB.Clone()
 	defer db.Close()
-
-	if err = db.DB("autodoc").C("docs").Find(bson.M{"ID": c.Param("id")}).One(doc); err != nil {
-		return
+	if err = db.DB("autodoc").C("docs").
+		Find(bson.M{"id": bson.ObjectIdHex(c.Param("id")).String()}).
+		All(&docs); err != nil {
+		return err
 	}
 
-	return c.JSON(http.StatusOK, doc)
+	return c.JSON(http.StatusOK, docs)
 }
 
 //PatchDoc with id

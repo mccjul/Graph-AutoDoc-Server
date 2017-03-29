@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"gopkg.in/mgo.v2/bson"
@@ -31,17 +33,17 @@ func (h *Handler) CreateApp(c echo.Context) (err error) {
 		return err
 	}
 
-	a := &model.App{
-		ID:    bson.NewObjectId(),
-		Token: token,
-		Name:  "DefaultName",
-	}
+	a := new(model.App)
 
 	if err = c.Bind(a); err != nil {
 		return err
 	}
 
-	if a.Name == "" || a.Maintainer == "" {
+	a.ID = bson.NewObjectId()
+	a.Token = token
+	a.Name = "DefaultName"
+
+	if a.Maintainer == "" {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid name or maintainer fields"}
 	}
 
@@ -52,25 +54,39 @@ func (h *Handler) CreateApp(c echo.Context) (err error) {
 		return err
 	}
 
+	// Generate docs
+	file, err := ioutil.ReadFile("./file.json")
+	if err != nil {
+		return err
+	}
+
+	docs := []*model.Doc{}
+	if err = json.Unmarshal(file, &docs); err != nil {
+		return
+	}
+	for i := 0; i < len(docs); i++ {
+		docs[i].ID = a.ID.String()
+		if err = db.DB("autodoc").C("docs").Insert(docs[i]); err != nil {
+			return
+		}
+	}
+
 	return c.JSON(http.StatusOK, a)
 }
 
 //PatchApp for maintainer
 func (h *Handler) PatchApp(c echo.Context) (err error) {
-	a := &model.App{}
+	a := new(model.App)
 
 	if err = c.Bind(a); err != nil {
 		return err
 	}
 
-	if a.Name == "" || a.Token == "" || a.Maintainer == "" {
-		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid fields"}
-	}
-
 	db := h.DB.Clone()
 	defer db.Close()
 
-	if err = db.DB("autodoc").C("apps").Update(bson.M{"ID": c.Param("id")}, a); err != nil {
+	if err = db.DB("autodoc").C("apps").
+		Update(bson.M{"_id": bson.ObjectIdHex(c.Param("id"))}, a); err != nil {
 		return err
 	}
 
@@ -82,7 +98,7 @@ func (h *Handler) RemoveApp(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()
 
-	if err = db.DB("autodoc").C("apps").Remove(bson.M{"ID": c.Param("id")}); err != nil {
+	if err = db.DB("autodoc").C("apps").Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("id"))}); err != nil {
 		return err
 	}
 
